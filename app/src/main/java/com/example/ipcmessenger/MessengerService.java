@@ -40,13 +40,12 @@ public class MessengerService extends Service {
         }
     }
 
-
+    private final Messenger mMessenger = new Messenger(new MessengerHandler());
     public MessengerService() {
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return mMessenger.getBinder();
     }
 }
