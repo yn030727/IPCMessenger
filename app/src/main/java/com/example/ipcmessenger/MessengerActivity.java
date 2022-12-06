@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.PersistableBundle;
 import android.os.RemoteException;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 //客户端
@@ -32,6 +34,8 @@ public class MessengerActivity extends Activity {
             Bundle data = new Bundle();
             data.putString("msg","hello , this is client");
             msg.setData(data);
+            //连接部分多了一句，发送replyTo参数给服务端
+            msg.replyTo = mGetReplyMessenger;
             try {
                 messenger.send(msg);
             } catch (RemoteException e) {
@@ -44,6 +48,22 @@ public class MessengerActivity extends Activity {
         }
     };
 
+    private Messenger mGetReplyMessenger = new Messenger(new MessengerHandler());
+    private static class MessengerHandler extends Handler{
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:{
+                    msg.getData().getString("reply");
+                    break;
+                }
+                default:{
+                    super.handleMessage(msg);
+                }
+            }
+        }
+    }
 
     //Activity创建的时候申请绑定
     @Override
